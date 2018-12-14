@@ -18,7 +18,8 @@ main:
 	sw $a0, 0($sp)		#store parameters
 	sw $a1, 4($sp)
 	jal sum
-	move $t0, $v0	#get return value
+	lw $t0, 0($sp)
+	addi $sp, $sp, 4
 
 	li $v0, 1	#now print it
 	move $a0, $t0
@@ -51,10 +52,16 @@ dont_return_first:
 	sw $a0, 0($sp)		#store parameters
 	sw $a1, 4($sp)
 	jal sum
+	lw $v0, 0($sp)		#retrieve the return value from the stack
+	addi $sp, $sp, 4	#deallocate the space for the returned value
+
 	add $v0, $s0, $v0	#return first number + sum of the rest
-	#the first $v0 on this line contains the function return value, and the second $v0 contains the return value from the recursive call
 return:
 	lw $ra, 0($sp)
 	lw $s0, 4($sp)
 	addi $sp, $sp, 8
+	
+	addi $sp, $sp, -4	#allocate space for the return value
+	sw $v0, 0($sp)		#put the return value on the stack
 	jr $ra
+
